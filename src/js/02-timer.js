@@ -2,10 +2,13 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import getTimeFunction from './functions/getTimeFunction';
 import { timerElem } from './timerElements';
+import { changeValuesOnTimer } from './functions/updateTimerFunction';
+import { resetTimer } from './functions/function-resetTimer';
 
 let defaultDate = 0;
 let dateUser = 0;
 let objData = {};
+let dateNow = 0;
 
 timerElem.btnStart.disabled = true;
 const options = {
@@ -17,12 +20,7 @@ const options = {
     defaultDate = options.defaultDate.getTime();
     dateUser = selectedDates[0].getTime();
     if (dateUser < defaultDate) {
-      alert('Please choose a date in the future');
-      timerElem.btnStart.disabled = true;
-      timerElem.daysEl.textContent = '00';
-      timerElem.hoursEl.textContent = '00';
-      timerElem.minutesEl.textContent = '00';
-      timerElem.secondsEl.textContent = '00';
+      resetTimer();
       return;
     }
     timerElem.btnStart.disabled = false;
@@ -33,15 +31,27 @@ const options = {
 
 flatpickr('#datetime-picker', options);
 
-timerElem.btnStart.addEventListener('click', onClickStartTimer);
+class Timer {
+  constructor() {
+    this.intervalid = null;
+  }
 
-function onClickStartTimer(e) {
-  console.log('Кнопка старт работает');
+  start() {
+    timerElem.btnStart.disabled = true;
+    this.intervalid = setInterval(() => {
+      dateNow = Date.now();
+      objData = getTimeFunction(dateUser - dateNow);
+      changeValuesOnTimer(objData);
+      const deltaTime = dateUser - dateNow - 1000;
+      if (deltaTime === 0 || deltaTime < 0) {
+        clearInterval(this.intervalid);
+      }
+    }, 1000);
+  }
 }
 
-function changeValuesOnTimer(objData) {
-  timerElem.daysEl.textContent = objData.days;
-  timerElem.hoursEl.textContent = objData.hours;
-  timerElem.minutesEl.textContent = objData.minutes;
-  timerElem.secondsEl.textContent = objData.seconds;
-}
+const timer = new Timer();
+
+timerElem.btnStart.addEventListener('click', () => {
+  timer.start();
+});
