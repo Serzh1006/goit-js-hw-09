@@ -3,7 +3,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 function createPromise(position, delay) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const promiseObj = {};
+      const promiseObj = { position: 0, delay: 0 };
       const shouldResolve = Math.random() > 0.3;
       promiseObj.position = position;
       promiseObj.delay = delay;
