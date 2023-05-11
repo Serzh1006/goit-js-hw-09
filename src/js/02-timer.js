@@ -25,7 +25,6 @@ const options = {
     }
     timerElem.btnStart.disabled = false;
     objData = getTimeFunction(dateUser - defaultDate);
-    changeValuesOnTimer(objData);
   },
 };
 
